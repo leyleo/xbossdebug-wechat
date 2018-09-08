@@ -1,10 +1,20 @@
 {
-  "presets": [
-    ["latest", {
-      "es2015": {
-        "modules": false
-      }
-    }]
-  ],
-  "plugins": ["external-helpers"]
+  "env": {
+    "test": {
+      "presets": ["latest"]
+    },
+    "build": {
+      "presets": [
+        [
+          "latest",
+          {
+            "es2015": {
+              "modules": false
+            }
+          }
+        ]
+      ],
+      "plugins": ["external-helpers"]
+    }
+  }
 }
