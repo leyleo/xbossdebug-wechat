@@ -453,7 +453,8 @@
             belong: 'Page',
             method: methodName,
             route: self.activePage && self.activePage.route,
-            options: self.activePage && self.activePage.options
+            options: self.activePage && self.activePage.options,
+            pageData: self.activePage && self.activePage.data
           };
           methodName === 'onLoad' && (breadcrumb.args = arguments);
           self.methodFilter(methodName) && self.pushToBreadcrumb(breadcrumb);
