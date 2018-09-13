@@ -254,12 +254,15 @@
             throw new Error('please set key in xbossdebug.config.key');
           }
           var postData = {
-            msg: params,
-            key: this.config.key
+            msg: JSON.stringify(params),
+            appkey: this.config.key
           };
           wx.request({
             url: url,
             method: 'POST',
+            header: {
+              'content-type': 'application/x-www-form-urlencoded'
+            },
             data: postData,
             success: cb
           });
