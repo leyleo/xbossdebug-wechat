@@ -100,7 +100,10 @@
         url: '', // 指定错误上报地址
         except: [/^Script error\.?/, /^Javascript error: Script error\.? on line 0/], // 忽略某个错误
         random: 1, // 抽样上报，1~0 之间数值，1为100%上报（默认 1）
-        repeat: 5 // 重复上报次数(对于同一个错误超过多少次不上报)
+        repeat: 5, // 重复上报次数(对于同一个错误超过多少次不上报)
+        pageWhiteList: ['onLoad', 'onShow', 'onReady'], // 页面方法白名单
+        getCustomData: null, // 回调方法，用来获取出问题时的一些自定义数据信息
+        pageData: false // 是否记录 pageData，false 不记录（默认），true 记录
       };
       this.config = utils.assignObject(this.config, options);
     }
@@ -250,11 +253,14 @@
           if (!this.config.key) {
             throw new Error('please set key in xbossdebug.config.key');
           }
-          params.key = this.config.key;
+          var postData = {
+            msg: params,
+            key: this.config.key
+          };
           wx.request({
             url: url,
             method: 'POST',
-            data: params,
+            data: postData,
             success: cb
           });
         }
@@ -278,6 +284,7 @@
             networkType: this.networkType,
             notifierVersion: this.config.version
           };
+          this.config.getCustomData && (params.customeData = this.config.getCustomData());
           this.request(url, params, function () {
             if (cb) {
               cb.call(_this2);
@@ -453,21 +460,23 @@
             belong: 'Page',
             method: methodName,
             route: self.activePage && self.activePage.route,
-            options: self.activePage && self.activePage.options,
-            pageData: self.activePage && self.activePage.data
+            options: self.activePage && self.activePage.options
           };
-          methodName === 'onLoad' && (breadcrumb.args = arguments);
+          typeof self.config.pageData === 'function' && (breadcrumb.pageData = self.activePage && self.activePage.data);
+          arguments && (breadcrumb.args = arguments);
           self.methodFilter(methodName) && self.pushToBreadcrumb(breadcrumb);
           return userDefinedMethod && userDefinedMethod.apply(this, arguments);
         };
       }
 
-      // 过滤方法，可以在这里做黑白名单
+      // 过滤方法，可以在这里做白名单过滤
 
     }, {
       key: 'methodFilter',
       value: function methodFilter(methodName) {
-        return methodName !== 'onPageScroll'; // 把onPageScroll方法过滤掉
+        return this.config.pageWhiteList.some(function (item) {
+          return item === methodName;
+        });
       }
     }, {
       key: 'getNetworkType',

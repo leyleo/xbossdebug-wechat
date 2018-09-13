@@ -92,17 +92,17 @@ class XbossDebug extends events(report(config)) {
         method: methodName,
         route: self.activePage && self.activePage.route,
         options: self.activePage && self.activePage.options,
-        pageData: self.activePage && self.activePage.data,
       };
-      methodName === 'onLoad' && (breadcrumb.args = arguments);
+      (typeof self.config.pageData === 'function') && (breadcrumb.pageData = self.activePage && self.activePage.data);
+      arguments && (breadcrumb.args = arguments);
       self.methodFilter(methodName) && self.pushToBreadcrumb(breadcrumb);
       return userDefinedMethod && userDefinedMethod.apply(this, arguments);
     };
   }
 
-  // 过滤方法，可以在这里做黑白名单
+  // 过滤方法，可以在这里做白名单过滤
   methodFilter(methodName) {
-    return methodName !== 'onPageScroll'; // 把onPageScroll方法过滤掉
+    return this.config.pageWhiteList.some(item => item === methodName);
   }
 
   getNetworkType() {

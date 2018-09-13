@@ -16,6 +16,9 @@ class Config {
       ], // 忽略某个错误
       random: 1, // 抽样上报，1~0 之间数值，1为100%上报（默认 1）
       repeat: 5, // 重复上报次数(对于同一个错误超过多少次不上报)
+      pageWhiteList: ['onLoad', 'onShow', 'onReady'], // 页面方法白名单
+      getCustomData: null, // 回调方法，用来获取出问题时的一些自定义数据信息
+      pageData: false, // 是否记录 pageData，false 不记录（默认），true 记录
     };
     this.config = utils.assignObject(this.config, options);
   }

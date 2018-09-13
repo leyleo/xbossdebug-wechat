@@ -46,11 +46,14 @@ const Report = supperclass => class extends supperclass {
       if (!this.config.key) {
         throw new Error('please set key in xbossdebug.config.key');
       }
-      params.key = this.config.key;
+      const postData = {
+        msg: params,
+        key: this.config.key,
+      };
       wx.request({
         url,
         method: 'POST',
-        data: params,
+        data: postData,
         success: cb,
       });
     }
@@ -69,6 +72,7 @@ const Report = supperclass => class extends supperclass {
         networkType: this.networkType,
         notifierVersion: this.config.version,
       };
+      this.config.getCustomData && (params.customeData = this.config.getCustomData());
       this.request(url, params, () => {
         if (cb) {
           cb.call(this);
